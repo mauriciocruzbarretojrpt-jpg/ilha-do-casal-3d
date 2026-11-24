@@ -1,0 +1,18 @@
+{
+  "name": "Ilha do Casal 3D — Maria & Mauricio",
+  "short_name": "Ilha do Casal",
+  "description": "Mundo 3D Anime e 9 Minigames 3D Multiplayer para Maria & Mauricio",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1b1936",
+  "theme_color": "#ff477e",
+  "icons": [
+    {
+      "src": "./assets/ui/island_emblem.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

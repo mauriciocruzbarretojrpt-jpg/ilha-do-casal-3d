@@ -1,0 +1,17 @@
+{
+  "name": "nosso-mundo-3d-casal",
+  "version": "2.0.0",
+  "description": "Mundo 3D e 9 minigames 3D para Maria & Mauricio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "three": "^0.170.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

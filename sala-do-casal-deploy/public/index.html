@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff477e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Ilha do Casal — ふたりの島 · Maria &amp; Mauricio</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/jpeg" href="./assets/ui/island_emblem.jpg" />
+  <link rel="apple-touch-icon" href="./assets/ui/island_emblem.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/style.css?v=mobile1" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three/three.module.js",
+        "three/addons/": "/vendor/three-addons/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Único Canvas WebGL 3D compartilhado -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- ==================== MENU INICIAL — ESTILO ANIME / JRPG JAPONÊS ==================== -->
+  <section id="menu-screen" class="menu-screen">
+    <div class="menu-layout">
+      <div class="menu-card">
+        <!-- Faixa superior chanfrada estilo JRPG -->
+        <div class="anime-ribbon-row">
+          <span class="anime-ribbon">✦ ふたりの島 · ANIME 3D WORLD ✦</span>
+          <div class="menu-mini-toggles">
+            <button type="button" id="btn-menu-crt" class="anime-tag-btn" title="Alternar modo de tela">
+              Filtro: Suave
+            </button>
+            <button type="button" id="btn-cam-couple" class="anime-tag-btn sky" title="Enquadrar os dois no Gazebo 3D">
+              Câmera Casal
+            </button>
+          </div>
+        </div>
+
+        <!-- Arte 2D Anime Original (Key Art + Brasão da Ilha + Logo Tipográfico Japonês/PT) -->
+        <div class="anime-hero-banner">
+          <img src="./assets/ui/couple_banner.jpg" alt="Ilustração Anime Maria e Mauricio" class="hero-banner-img" />
+          <div class="hero-banner-gradient"></div>
+          <img src="./assets/ui/island_emblem.jpg" alt="Emblema da Ilha" class="hero-crest-img" />
+          <div class="hero-title-block">
+            <span class="jp-kicker">マリア ＆ マウリシオの冒険</span>
+            <h1 class="menu-title">Ilha do Casal</h1>
+            <span class="menu-couple-sub">Maria &amp; Mauricio · 9 Jogos 3D</span>
+          </div>
+        </div>
+
+        <div class="field-label-row">
+          <label>Escolha Seu Personagem (1P / 2P)</label>
+          <span class="jp-micro">キャラクター選択</span>
+        </div>
+
+        <!-- Seletor com Retratos 2D Cel-Shaded Originais de Mauricio & Maria -->
+        <div class="char-selector" id="char-selector">
+          <button type="button" class="char-card active" data-char="mauricio">
+            <span class="char-slot-tag blue">1P</span>
+            <div class="char-portrait-frame blue">
+              <img src="./assets/ui/mauricio_portrait.jpg" alt="Mauricio Anime" />
+            </div>
+            <div class="char-info">
+              <strong>Mauricio</strong>
+              <span>マウリシオ · Rig 3D</span>
+            </div>
+          </button>
+
+          <button type="button" class="char-card" data-char="maria">
+            <span class="char-slot-tag pink">2P</span>
+            <div class="char-portrait-frame pink">
+              <img src="./assets/ui/maria_portrait.jpg" alt="Maria Anime" />
+            </div>
+            <div class="char-info">
+              <strong>Maria</strong>
+              <span>マリア · Rig 3D</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="menu-inputs-grid">
+          <div class="input-group">
+            <label for="inp-name">Apelido</label>
+            <input id="inp-name" type="text" maxlength="20" value="Mauricio" placeholder="Seu nome..." />
+          </div>
+
+          <div class="input-group">
+            <label for="inp-room">Senha da Sala</label>
+            <div class="room-input-wrap">
+              <input id="inp-room" type="text" maxlength="16" value="NOSSOAMOR" placeholder="NOSSOAMOR" />
+              <button type="button" id="btn-random-room" class="icon-mini-btn" title="Sortear código"></button>
+              <button type="button" id="btn-copy-link" class="icon-mini-btn" title="Copiar convite"></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="menu-actions">
+          <button type="button" id="btn-join-online" class="btn-anime-primary">
+            <span class="btn-main-line"><i class="svg-slot" data-icon="play"></i> Entrar na Ilha 3D</span>
+            <small>Conectar com o código da sala · スタート</small>
+          </button>
+
+          <button type="button" id="btn-join-bot" class="btn-anime-secondary">
+            <span class="btn-main-line"><i class="svg-slot" data-icon="partner"></i> Jogar com Parceiro(a) IA</span>
+            <small id="bot-btn-sub">A Maria (IA) explora e joga com você até ela entrar!</small>
+          </button>
+        </div>
+
+        <div class="menu-loader" id="menu-loader">
+          <div class="loader-track"><div class="loader-fill" id="loader-fill"></div></div>
+          <span id="loader-label">Preparando modelos 3D e cenários da ilha...</span>
+        </div>
+      </div>
+
+      <!-- Placa de palco 3D ao vivo à direita -->
+      <div class="menu-showcase-caption">
+        <div class="showcase-pill" id="showcase-pill">
+          <span class="dot-live"></span>
+          <span id="showcase-text">Palco 3D ao vivo · Cenários reais CC0 + Física Sólida</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HUD DO MUNDO 3D — ESTILO PARTY BAR JRPG ==================== -->
+  <header id="top-hud" class="top-hud hidden">
+    <div class="hud-left">
+      <div class="room-pill" id="hud-room-pill" title="Clique para copiar o link de convite">
+        <span class="room-dot"></span>
+        <span>SALA <strong id="hud-room-code">NOSSOAMOR</strong></span>
+        <span class="copy-tag">CONVIDAR</span>
+      </div>
+      <div class="players-online-bar" id="hud-players-bar"></div>
+    </div>
+
+    <div class="hud-right">
+      <button type="button" id="btn-ps2-filter" class="hud-btn" title="Alternar modo de tela">Filtro Suave</button>
+      <button type="button" id="btn-mood" class="hud-btn" title="Mudar horário da ilha">Clima</button>
+      <button type="button" id="btn-bot-toggle" class="hud-btn hidden" title="Chamar ou dispensar Parceiro IA">Parceiro IA</button>
+      <button type="button" id="btn-games-drawer" class="hud-btn accent">9 Jogos 3D</button>
+      <button type="button" id="btn-chat-toggle" class="hud-btn">Chat <span id="chat-unread" class="badge-dot hidden"></span></button>
+      <button type="button" id="btn-music" class="hud-btn icon-only" title="Música"></button>
+      <button type="button" id="btn-sound" class="hud-btn icon-only" title="Efeitos sonoros"></button>
+      <button type="button" id="btn-fullscreen" class="hud-btn icon-only" title="Tela cheia"></button>
+      <button type="button" id="btn-back-menu" class="hud-btn icon-only" title="Voltar ao Menu"></button>
+    </div>
+  </header>
+
+  <!-- Prompt de proximidade 3D na Ilha -->
+  <div id="world-prompt" class="world-prompt hidden">
+    <div class="prompt-icon" id="prompt-icon"></div>
+    <div class="prompt-body">
+      <strong id="prompt-title">Tênis Sakura 3D</strong>
+      <span id="prompt-desc">Aperte E ou clique para entrar!</span>
+    </div>
+    <button type="button" id="btn-prompt-go" class="btn-prompt-play">Jogar (E)</button>
+  </div>
+
+  <!-- Barra de Carimbos / Emotes Vetoriais Anime -->
+  <div id="emote-bar" class="emote-bar hidden">
+    <button type="button" data-emote="💖" data-svg="emoteLove" title="Amor"></button>
+    <button type="button" data-emote="😘" data-svg="emoteKiss" title="Beijo"></button>
+    <button type="button" data-emote="🥰" data-svg="emoteSparkle" title="Brilho"></button>
+    <button type="button" data-emote="😂" data-svg="emoteHappy" title="Sorriso"></button>
+    <button type="button" data-emote="🔥" data-svg="emoteDance" title="Dançar Samba"></button>
+    <button type="button" data-emote="👋" data-svg="emoteWave" title="Acenar"></button>
+  </div>
+
+  <!-- Guia discreto de controles estilo JRPG -->
+  <div id="world-controls-hint" class="world-controls-hint hidden">
+    <span><b>WASD</b> Andar · <b>Shift</b> Correr · <b>Espaço</b> Pular/Subir · <b>Mouse</b> Câmera · <b>Chute as bolas na praça!</b></span>
+  </div>
+
+  <!-- Controles Touch (Celular / Tablet) -->
+  <div id="mobile-world-controls" class="mobile-world-controls hidden">
+    <div id="joystick-zone" class="joystick-zone">
+      <div id="joystick-base" class="joystick-base">
+        <div id="joystick-stick" class="joystick-stick"></div>
+      </div>
+    </div>
+    <div class="mobile-action-cluster">
+      <button type="button" id="btn-mobile-action" class="mobile-act-btn hidden">JOGAR</button>
+      <button type="button" id="btn-mobile-jump" class="mobile-jump-btn">PULAR</button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL DE CATÁLOGO DOS 9 MINIGAMES 3D ==================== -->
+  <div id="games-modal" class="modal-backdrop hidden">
+    <div class="games-modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="jp-kicker">ミニゲーム一覧 · 9 ARENAS 3D</span>
+          <h2>Escolha um Minigame 3D</h2>
+          <p>Ou caminhe até qualquer quiosque na Ilha 3D para jogar juntos!</p>
+        </div>
+        <button type="button" id="btn-close-games" class="close-btn">✕</button>
+      </div>
+      <div id="games-grid" class="games-grid"></div>
+    </div>
+  </div>
+
+  <!-- ==================== GAVETA DE DIÁLOGO ESTILO VISUAL NOVEL ==================== -->
+  <aside id="chat-drawer" class="chat-drawer hidden">
+    <div class="chat-header">
+      <div>
+        <span class="jp-micro">チャット</span>
+        <strong>Diálogo do Casal</strong>
+      </div>
+      <button type="button" id="btn-close-chat" class="close-btn">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <form id="chat-form" class="chat-form">
+      <input id="chat-input" type="text" maxlength="200" placeholder="Escreva uma mensagem..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <!-- ==================== OVERLAY HUD DOS MINIGAMES 3D ==================== -->
+  <section id="minigame-hud" class="minigame-hud hidden">
+    <div class="mg-top-bar">
+      <div class="mg-title-pill">
+        <span id="mg-icon" class="mg-svg-wrap"></span>
+        <strong id="mg-title">Tênis Sakura 3D</strong>
+      </div>
+
+      <div class="mg-scoreboard" id="mg-scoreboard"></div>
+
+      <button type="button" id="btn-leave-game" class="mg-leave-btn">← Voltar à Ilha</button>
+    </div>
+
+    <div class="mg-status-banner" id="mg-status-banner">Prepare-se!</div>
+
+    <div id="mg-custom-ui" class="mg-custom-ui"></div>
+
+    <!-- Modal de Vitória Anime -->
+    <div id="mg-gameover" class="mg-gameover hidden">
+      <div class="mg-gameover-card">
+        <img src="./assets/ui/island_emblem.jpg" alt="Emblema" class="gameover-emblem" />
+        <div class="mg-trophy" id="mg-gameover-icon"></div>
+        <h2 id="mg-gameover-title">Fim de Partida!</h2>
+        <p id="mg-gameover-sub"></p>
+        <div class="mg-gameover-btns">
+          <button type="button" id="btn-rematch" class="btn-anime-primary compact">Jogar Novamente</button>
+          <button type="button" id="btn-gameover-leave" class="btn-anime-secondary compact">Voltar à Ilha</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Avisos estilo Mangá -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="./js/main.js?v=mobile1"></script>
+</body>
+</html>
